@@ -43,8 +43,7 @@ MAIN_FOLDER_PATH=C:/ваш/путь/до/папки/с/файлами
 
 ## Автор проекта
 
-**Михаил Киржаков**
+**Михаил Киржаков** Email: kirzhakovma@mail.ru
 
 [![Telegram](https://img.shields.io/badge/Telegram-blue?logo=telegram&logoColor=white)](https://t.me/Stoparrik)
-[![Mail](https://img.shields.io/badge/Email-gray?logo=gmail&logoColor=white)](mailto:kirzhakovma@mail.ru)
 [![GitHub](https://img.shields.io/badge/GitHub-black?style=flat&logo=github)](https://github.com/MihailKirzhakov)
