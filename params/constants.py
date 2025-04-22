@@ -12,7 +12,13 @@ MAIN_DESCRIPTION = (
     'и добавляет данные в таблицу.'
 )
 CONVERT_DESCRIPTION = 'Запуск отдельного конвертирования файлов'
-ADD_TO_TABLE_DESCRIPTION = 'Запуск отдельного процесса сбора и добавления данных в excel файл'
+ADD_TO_TABLE_DESCRIPTION = (
+    'Запуск отдельного процесса сбора и добавления данных в excel файл'
+)
+COMPLETE_CONVERSION = 'Конвертирование завершено!'
+COMPLETE_COLLECT_PACKAGE = 'Сбор и упаковка данных завершены!'
+PACKAGING_PROCESS = 'Упаковка данных...'
+COLLECTING_PROCESS = 'Процесс сбора данных...'
 
 # Паттерны регулярных выражений
 CULTURE_PATTERN = r'\d+\.\s+([A-Za-z]+\s+[a-z]+)\s+\d+\s+KOE/мл'
