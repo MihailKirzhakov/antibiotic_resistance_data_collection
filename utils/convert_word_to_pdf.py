@@ -1,6 +1,5 @@
 import os
 
-from tqdm import tqdm
 from docx2pdf import convert
 
 from utils.exceptions import ConvertToPdfFileError
