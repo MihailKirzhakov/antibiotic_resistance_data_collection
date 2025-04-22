@@ -14,9 +14,11 @@ from params.constants import (
     CULTURE_PATTERN, TITER_PATTERN, CARD_NUMBER_PATTENR,
     STUDIED_BIOMATERIAL_PATTERN, DATE_TAKEN_PATTERN,
     DATE_COMPLETED_PATTERN, ANTIBIOTIC_PATTERN_PART,
+    COLLECTING_PROCESS, PACKAGING_PROCESS
 )
 from params.departments import departments
-from utils.exceptions import GetDataFromPdfError, SaveToExcelFileError
+from .exceptions import GetDataFromPdfError, SaveToExcelFileError
+from .decorators import redirect_stderr_to_log
 
 
 # Получение текущего DataFrame из существующего файла
@@ -58,7 +60,7 @@ def get_data_from_pdf(file_path: str) -> tuple:
 
     try:
         # Открываем PDF файл
-        with pdfplumber.open(file_path) as pdf:
+        with redirect_stderr_to_log(), pdfplumber.open(file_path) as pdf:
 
             cultures: list[str] = list()
             titer_list: list[str] = list()
@@ -100,7 +102,9 @@ def get_data_from_pdf(file_path: str) -> tuple:
                     card_number = card_number_match.group(1)
 
                 # Ищем исследуемый биоматериал
-                studied_biomaterial_match = re.search(STUDIED_BIOMATERIAL_PATTERN, text)
+                studied_biomaterial_match = re.search(
+                    STUDIED_BIOMATERIAL_PATTERN, text
+                )
                 if studied_biomaterial_match:
                     studied_biomaterial = studied_biomaterial_match.group(1)
 
@@ -116,7 +120,9 @@ def get_data_from_pdf(file_path: str) -> tuple:
 
                 # Ищем результат резистентности
                 for antibiotic in antibiotic_list:
-                    pattern = rf'{re.escape(antibiotic)}{ANTIBIOTIC_PATTERN_PART}'
+                    pattern = (
+                        rf'{re.escape(antibiotic)}{ANTIBIOTIC_PATTERN_PART}'
+                    )
                     matches = re.findall(pattern, text)
                     if matches:
                         resistances = [match[1] for match in matches]
@@ -128,7 +134,9 @@ def get_data_from_pdf(file_path: str) -> tuple:
             found_antibiotics
         )
     except GetDataFromPdfError as e:
-        print(f"Ошибка при сборе данных из файла открытии файла {file_path}: {e}")
+        print(
+            f'Ошибка при сборе данных из файла открытии файла {file_path}: {e}'
+        )
         return ([], [], None, None, None, None, None, {})
 
 
@@ -160,7 +168,7 @@ def add_to_table(df: DataFrame, output_file_path: str) -> DataFrame:
     ]
 
     # Перебираем все файлы в указанной папке
-    for filename in pdf_files:
+    for filename in tqdm(pdf_files, desc=COLLECTING_PROCESS):
         if filename.endswith('.pdf'):
             file_path = os.path.join(settings.MAIN_FOLDER_PATH, filename)
 
@@ -195,7 +203,7 @@ def add_to_table(df: DataFrame, output_file_path: str) -> DataFrame:
     # Некий костыль для адекватной работы pandas
     # Дозаполняем списки строк, для вставки данных без ошибок
     max_length = max(len(lst) for lst in data.values())
-    for key in data:
+    for key in tqdm(data, desc=PACKAGING_PROCESS):
         while len(data[key]) < max_length:
             data[key].append('')
 
@@ -212,4 +220,7 @@ def add_to_table(df: DataFrame, output_file_path: str) -> DataFrame:
         ) as writer:
             df.to_excel(writer, index=False, sheet_name=SHEET_NAME)
     except SaveToExcelFileError as e:
-        print(f"Ошибка при сохранении данных в файл excel {output_file_path}: {e}")
+        print(
+            f'Ошибка при сохранении данных в файл excel '
+            f'{output_file_path}: {e}'
+        )

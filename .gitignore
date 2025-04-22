@@ -41,6 +41,9 @@ check.py
 pip-log.txt
 pip-delete-this-directory.txt
 
+# info logs
+log_info.txt
+
 # Unit test / coverage reports
 htmlcov/
 .tox/
