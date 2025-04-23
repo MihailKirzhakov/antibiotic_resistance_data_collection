@@ -13,8 +13,9 @@ from params.constants import (
     STUDIED_BIOMATERIAL, DATE_TAKEN, DATE_COMPLETED,
     CULTURE_PATTERN, TITER_PATTERN, CARD_NUMBER_PATTENR,
     STUDIED_BIOMATERIAL_PATTERN, DATE_TAKEN_PATTERN,
-    DATE_COMPLETED_PATTERN, ANTIBIOTIC_PATTERN_PART,
-    COLLECTING_PROCESS, PACKAGING_PROCESS
+    DATE_COMPLETED_PATTERN, COLLECTING_PROCESS,
+    COLLECT_DATA_ERROR, COMPLETE_COLLECT_PACKAGE,
+    PACKAGING_PROCESS
 )
 from params.departments import departments
 from .exceptions import GetDataFromPdfError, SaveToExcelFileError
@@ -74,6 +75,8 @@ def get_data_from_pdf(file_path: str) -> tuple:
             for page in pdf.pages:
                 # Извлекаем текст
                 text = page.extract_text()
+                # Пакуем в таблицу значения резистентности
+                tables = page.extract_tables()
 
                 # Ищем культуры в посеве
                 matches = re.findall(CULTURE_PATTERN, text)
@@ -119,14 +122,18 @@ def get_data_from_pdf(file_path: str) -> tuple:
                     date_completed = date_completed_match.group(1)
 
                 # Ищем результат резистентности
-                for antibiotic in antibiotic_list:
-                    pattern = (
-                        rf'{re.escape(antibiotic)}{ANTIBIOTIC_PATTERN_PART}'
-                    )
-                    matches = re.findall(pattern, text)
-                    if matches:
-                        resistances = [match[1] for match in matches]
-                        found_antibiotics[antibiotic] = resistances
+                for table in tables:
+                    for row in table:
+                        for row_value in row:
+                            if row_value is not None:
+                                antibiotic_pattern = (
+                                    r'\b(?:' + '|'.join(
+                                        re.escape(antibiotic) for antibiotic in antibiotic_list
+                                    ) + r')\b'
+                                )
+                                antibiotic_matches = re.findall(antibiotic_pattern, row_value)
+                                if antibiotic_matches:
+                                    found_antibiotics[antibiotic_matches[0]] = row[1:]
 
         return (
             cultures, titer_list, department, card_number,
@@ -135,7 +142,7 @@ def get_data_from_pdf(file_path: str) -> tuple:
         )
     except GetDataFromPdfError as e:
         print(
-            f'Ошибка при сборе данных из файла открытии файла {file_path}: {e}'
+            f'{COLLECT_DATA_ERROR} {file_path}: {e}'
         )
         return ([], [], None, None, None, None, None, {})
 
@@ -158,7 +165,7 @@ def add_to_table(df: DataFrame, output_file_path: str) -> DataFrame:
         CARD_NUMBER: [],
         STUDIED_BIOMATERIAL: [],
         DATE_TAKEN: [],
-        DATE_COMPLETED: []
+        DATE_COMPLETED: [],
     }
 
     # Получаем список всех PDF файлов в указанной папке
@@ -179,26 +186,21 @@ def add_to_table(df: DataFrame, output_file_path: str) -> DataFrame:
             studied_biomaterial, date_taken, date_completed, found_antibiotics
         ) = get_data_from_pdf(file_path)
 
-        for index, culture in enumerate(cultures):
-            data[CULTURES].append(culture)
-            data[TITER].append(titer_list[index])
+        # Выполняем процесс упаковки данных в новый DataFrame
+        data[CULTURES].extend(cultures)
+        data[TITER].extend(titer_list)
+        for _ in cultures:
             data[DEPARTMENT].append(department)
             data[CARD_NUMBER].append(card_number)
             data[STUDIED_BIOMATERIAL].append(studied_biomaterial)
             data[DATE_TAKEN].append(date_taken)
             data[DATE_COMPLETED].append(date_completed)
 
-            for found_antibiotic, resistance in found_antibiotics.items():
-                # Добавляем новый столбец, если такого не существует
-                if found_antibiotic not in data:
-                    data[found_antibiotic] = []
-
-                # Добавляем значение резустентности, если индекс валидный,
-                # или вставляем пробел
-                if index < len(resistance):
-                    data[found_antibiotic].append(resistance[index])
-                else:
-                    data[found_antibiotic].append('')
+        for found_antibiotic, resistance in found_antibiotics.items():
+            if found_antibiotic not in data:
+                data[found_antibiotic] = resistance
+            else:
+                data[found_antibiotic].extend(resistance)
 
     # Некий костыль для адекватной работы pandas
     # Дозаполняем списки строк, для вставки данных без ошибок
@@ -219,6 +221,7 @@ def add_to_table(df: DataFrame, output_file_path: str) -> DataFrame:
             engine='openpyxl', if_sheet_exists='overlay'
         ) as writer:
             df.to_excel(writer, index=False, sheet_name=SHEET_NAME)
+        print(COMPLETE_COLLECT_PACKAGE)
     except SaveToExcelFileError as e:
         print(
             f'Ошибка при сохранении данных в файл excel '
