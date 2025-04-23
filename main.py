@@ -2,8 +2,7 @@ import argparse
 
 from params.config import settings
 from params.constants import (
-    MAIN_DESCRIPTION, CONVERT_DESCRIPTION, ADD_TO_TABLE_DESCRIPTION,
-    COMPLETE_CONVERSION, COMPLETE_COLLECT_PACKAGE
+    MAIN_DESCRIPTION, CONVERT_DESCRIPTION, ADD_TO_TABLE_DESCRIPTION
 )
 from utils.get_data_from_pdf import df, add_to_table
 from utils.convert_word_to_pdf import convertation
@@ -22,12 +21,10 @@ def main(convert=False, add=False):
     # Если передан аргумент -c, выполняем только конвертирование
     if convert or not (convert or add):
         convertation(settings.MAIN_FOLDER_PATH)
-        print(COMPLETE_CONVERSION)
 
     # Если передан аргумент -a, выполняем только сбор и упаковку данных
     if add or not (convert or add):
         add_to_table(df, settings.MAIN_EXCEL_FILE_PATH)
-        print(COMPLETE_COLLECT_PACKAGE)
 
 
 if __name__ == '__main__':

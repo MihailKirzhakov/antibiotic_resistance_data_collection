@@ -17,8 +17,13 @@ ADD_TO_TABLE_DESCRIPTION = (
 )
 COMPLETE_CONVERSION = 'Конвертирование завершено!'
 COMPLETE_COLLECT_PACKAGE = 'Сбор и упаковка данных завершены!'
-PACKAGING_PROCESS = 'Упаковка данных...'
 COLLECTING_PROCESS = 'Процесс сбора данных...'
+COLLECT_DATA_ERROR = 'Ошибка при сборе данных из файла'
+CHECK_PDF_FILES_ERROR = (
+    'Для корректной работы программы необходимо удалить/убрать все '
+    '.pdf файлы из папки'
+)
+PACKAGING_PROCESS = 'Упаковываем...'
 
 # Паттерны регулярных выражений
 CULTURE_PATTERN = r'\d+\.\s+([A-Za-z]+\s+[a-z]+)\s+\d+\s+KOE/мл'
@@ -27,4 +32,4 @@ CARD_NUMBER_PATTENR = r'Номер карты:\s*(\d+/\w+)'
 STUDIED_BIOMATERIAL_PATTERN = r'Исследуемый биоматериал (.+)'
 DATE_TAKEN_PATTERN = r'Дата забора:\s*(\d{2}.\d{2}.\d{4})'
 DATE_COMPLETED_PATTERN = r'Дата выполнения:\s*(\d{2}.\d{2}.\d{2})'
-ANTIBIOTIC_PATTERN_PART = r'\s*\((.*?)\)\s*([SIR])'
+
