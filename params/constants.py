@@ -32,4 +32,3 @@ CARD_NUMBER_PATTENR = r'Номер карты:\s*(\d+/\w+)'
 STUDIED_BIOMATERIAL_PATTERN = r'Исследуемый биоматериал (.+)'
 DATE_TAKEN_PATTERN = r'Дата забора:\s*(\d{2}.\d{2}.\d{4})'
 DATE_COMPLETED_PATTERN = r'Дата выполнения:\s*(\d{2}.\d{2}.\d{2})'
-
