@@ -3,6 +3,7 @@ import os
 from docx2pdf import convert
 
 from utils.exceptions import ConvertToPdfFileError
+from params.constants import CHECK_PDF_FILES_ERROR, COMPLETE_CONVERSION
 
 
 def convertation(work_folder: str) -> None:
@@ -17,12 +18,19 @@ def convertation(work_folder: str) -> None:
         None
     """
 
+    files_in_folder = os.listdir(work_folder)
+
     # Упаковываем в список файлы, которые будем конвертировать,
     # отбирая их по формату .docx
-    word_files = [
-        filename for filename in os.listdir(work_folder)
-        if filename.endswith('.docx') or filename.endswith('.doc')
-    ]
+    pdf_files = [filename for filename in files_in_folder if filename.endswith('.pdf')]
+    if pdf_files:
+        return print(f'{CHECK_PDF_FILES_ERROR} {work_folder}')
+    else:
+        # Получаем список файлов .docx и .doc
+        word_files = [
+            filename for filename in files_in_folder
+            if filename.endswith('.docx') or filename.endswith('.doc')
+        ]
 
     # Перебираем список
     for index, input_file in enumerate(word_files, start=1):
@@ -34,3 +42,5 @@ def convertation(work_folder: str) -> None:
             convert(input_path, output_file)
         except ConvertToPdfFileError as e:
             print(f'Ошибка при конвертации файла {input_file}: {e}')
+
+    print(COMPLETE_CONVERSION)
