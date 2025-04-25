@@ -9,21 +9,29 @@ from tqdm import tqdm
 from params.antibiotics import antibiotic_list
 from params.config import settings
 from params.constants import (
-    SHEET_NAME, CULTURES, TITER, DEPARTMENT, CARD_NUMBER,
+    MAIN_SHEET_NAME, CULTURES, TITER, DEPARTMENT, CARD_NUMBER,
     STUDIED_BIOMATERIAL, DATE_TAKEN, DATE_COMPLETED,
     CULTURE_PATTERN, TITER_PATTERN, CARD_NUMBER_PATTENR,
     STUDIED_BIOMATERIAL_PATTERN, DATE_TAKEN_PATTERN,
     DATE_COMPLETED_PATTERN, COLLECTING_PROCESS,
     COLLECT_DATA_ERROR, COMPLETE_COLLECT_PACKAGE,
+    ANALYSIS_SHEET_NAME, ATTENTION_NEW_BACTERIA
 )
 from params.departments import departments
 from .exceptions import GetDataFromPdfError, SaveToExcelFileError
 from .decorators import redirect_stderr_to_log
 
 
-# Получение текущего DataFrame из существующего файла
+# Получение главного DataFrame из существующего файла
 df: DataFrame = pd.read_excel(
-    settings.MAIN_EXCEL_FILE_PATH, sheet_name=SHEET_NAME, engine='openpyxl'
+    settings.MAIN_EXCEL_FILE_PATH,
+    sheet_name=MAIN_SHEET_NAME, engine='openpyxl'
+)
+
+# Получение DataFrame с данными о имеющихся бактериях
+bacteria_list_df: DataFrame = pd.read_excel(
+    settings.MAIN_EXCEL_FILE_PATH,
+    sheet_name=ANALYSIS_SHEET_NAME, engine='openpyxl'
 )
 
 
@@ -147,7 +155,7 @@ def get_data_from_pdf(file_path: str) -> tuple:
         return ([], [], None, None, None, None, None, {})
 
 
-def add_to_table(df: DataFrame, output_file_path: str) -> DataFrame:
+def add_to_table(output_file_path: str) -> DataFrame:
     """Функция для упаковки и передачи данных в файл excel
 
     Args:
@@ -158,6 +166,7 @@ def add_to_table(df: DataFrame, output_file_path: str) -> DataFrame:
     Returns:
         df (Class: DataFrame): Обновлённые данные
     """
+    # Создаём словарь data, который будет упакован в новый DataFrame
     data: dict[str, list[str]] = {
         CULTURES: [],
         TITER: [],
@@ -168,6 +177,14 @@ def add_to_table(df: DataFrame, output_file_path: str) -> DataFrame:
         DATE_COMPLETED: [],
     }
 
+    # Создаём список имеющихся бактерий для сверки
+    bacteria_list: list[str] = []
+    new_bacteria_list: list[str] = []
+    first_column_data = bacteria_list_df.iloc[:, 0]
+    for name in first_column_data:
+        bacteria_list.append(name)
+
+    # Создаём столбцы с антибиотиками в словаре data
     for antibiotic in antibiotic_list:
         data[antibiotic] = []
 
@@ -210,10 +227,24 @@ def add_to_table(df: DataFrame, output_file_path: str) -> DataFrame:
             while len(data[key]) < max_length:
                 data[key].append('')
 
+    # Проверяем на наличие новых, не учтённых бактерий
+    for value in data[CULTURES]:
+        if value not in bacteria_list:
+            new_bacteria_list.append(value)
+
+    # Помещаем новые бактерии в текстовый файл,
+    # если есть новые бактерии
+    if len(new_bacteria_list) > 0:
+        with open(os.path.join(os.getcwd(), 'new_bacteria.txt.'), 'w') as file:
+            for bacteria in new_bacteria_list:
+                file.write(f"{bacteria}\n")
+        print(ATTENTION_NEW_BACTERIA)
+
     # Создаём обновлённый датафрейм
     new_df = pd.DataFrame(data)
+
     # Объединяем датафреймы
-    df = pd.concat([df, new_df])
+    concat_df = pd.concat([df, new_df])
 
     try:
         # Сохраняем в Excel
@@ -221,7 +252,7 @@ def add_to_table(df: DataFrame, output_file_path: str) -> DataFrame:
             output_file_path, mode='a',
             engine='openpyxl', if_sheet_exists='overlay'
         ) as writer:
-            df.to_excel(writer, index=False, sheet_name=SHEET_NAME)
+            concat_df.to_excel(writer, index=False, sheet_name=MAIN_SHEET_NAME)
         print(COMPLETE_COLLECT_PACKAGE)
     except SaveToExcelFileError as e:
         print(

@@ -24,7 +24,7 @@ def main(convert=False, add=False):
 
     # Если передан аргумент -a, выполняем только сбор и упаковку данных
     if add or not (convert or add):
-        add_to_table(df, settings.MAIN_EXCEL_FILE_PATH)
+        add_to_table(settings.MAIN_EXCEL_FILE_PATH)
 
 
 if __name__ == '__main__':
