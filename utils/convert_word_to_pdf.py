@@ -22,7 +22,9 @@ def convertation(work_folder: str) -> None:
 
     # Упаковываем в список файлы, которые будем конвертировать,
     # отбирая их по формату .docx
-    pdf_files = [filename for filename in files_in_folder if filename.endswith('.pdf')]
+    pdf_files = [
+        filename for filename in files_in_folder if filename.endswith('.pdf')
+    ]
     if pdf_files:
         return print(f'{CHECK_PDF_FILES_ERROR} {work_folder}')
     else:

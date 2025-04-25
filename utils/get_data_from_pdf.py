@@ -15,7 +15,6 @@ from params.constants import (
     STUDIED_BIOMATERIAL_PATTERN, DATE_TAKEN_PATTERN,
     DATE_COMPLETED_PATTERN, COLLECTING_PROCESS,
     COLLECT_DATA_ERROR, COMPLETE_COLLECT_PACKAGE,
-    PACKAGING_PROCESS
 )
 from params.departments import departments
 from .exceptions import GetDataFromPdfError, SaveToExcelFileError
@@ -126,12 +125,13 @@ def get_data_from_pdf(file_path: str) -> tuple:
                     for row in table:
                         for row_value in row:
                             if row_value is not None:
-                                antibiotic_pattern = (
-                                    r'\b(?:' + '|'.join(
-                                        re.escape(antibiotic) for antibiotic in antibiotic_list
-                                    ) + r')\b'
+                                antibiotic_pattern = r'\b(' + '|'.join(
+                                    re.escape(antibiotic) for antibiotic
+                                    in antibiotic_list
+                                ) + r')\b(?=\s|\)|$)'
+                                antibiotic_matches = re.findall(
+                                    antibiotic_pattern, row_value
                                 )
-                                antibiotic_matches = re.findall(antibiotic_pattern, row_value)
                                 if antibiotic_matches:
                                     found_antibiotics[antibiotic_matches[0]] = row[1:]
 
@@ -158,7 +158,7 @@ def add_to_table(df: DataFrame, output_file_path: str) -> DataFrame:
     Returns:
         df (Class: DataFrame): Обновлённые данные
     """
-    data: dict[str, list] = {
+    data: dict[str, list[str]] = {
         CULTURES: [],
         TITER: [],
         DEPARTMENT: [],
@@ -167,6 +167,9 @@ def add_to_table(df: DataFrame, output_file_path: str) -> DataFrame:
         DATE_TAKEN: [],
         DATE_COMPLETED: [],
     }
+
+    for antibiotic in antibiotic_list:
+        data[antibiotic] = []
 
     # Получаем список всех PDF файлов в указанной папке
     pdf_files = [
@@ -197,22 +200,20 @@ def add_to_table(df: DataFrame, output_file_path: str) -> DataFrame:
             data[DATE_COMPLETED].append(date_completed)
 
         for found_antibiotic, resistance in found_antibiotics.items():
-            if found_antibiotic not in data:
-                data[found_antibiotic] = resistance
-            else:
-                data[found_antibiotic].extend(resistance)
+            data[found_antibiotic].extend(resistance)
 
-    # Некий костыль для адекватной работы pandas
-    # Дозаполняем списки строк, для вставки данных без ошибок
-    max_length = max(len(lst) for lst in data.values())
-    for key in tqdm(data, desc=PACKAGING_PROCESS):
-        while len(data[key]) < max_length:
-            data[key].append('')
+        # Некий костыль для адекватной работы pandas.
+        # Дозаполняем списки строк, для вставки данных без ошибок,
+        # если высота столбца не совпадает, то добавляем пустую строку
+        max_length = len(data[CULTURES])
+        for key in data.keys():
+            while len(data[key]) < max_length:
+                data[key].append('')
 
     # Создаём обновлённый датафрейм
     new_df = pd.DataFrame(data)
     # Объединяем датафреймы
-    df = pd.concat([df, new_df], ignore_index=True)
+    df = pd.concat([df, new_df])
 
     try:
         # Сохраняем в Excel
