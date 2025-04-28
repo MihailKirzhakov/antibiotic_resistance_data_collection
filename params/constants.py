@@ -28,6 +28,7 @@ ATTENTION_NEW_BACTERIA = (
     'Обратите внимание! Появились неучтённые бактерии! '
     'Их названия были внесены в файл new_bacteria.txt.'
 )
+PD_ENGINE = 'openpyxl'
 
 # Паттерны регулярных выражений
 CULTURE_PATTERN = r'\d+\.\s+([A-Za-z]+\s+[a-z]+)(?:\s+\d+\s+KOE/мл|\s*)?'

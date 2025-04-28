@@ -15,7 +15,8 @@ from params.constants import (
     STUDIED_BIOMATERIAL_PATTERN, DATE_TAKEN_PATTERN,
     DATE_COMPLETED_PATTERN, COLLECTING_PROCESS,
     COLLECT_DATA_ERROR, COMPLETE_COLLECT_PACKAGE,
-    ANALYSIS_SHEET_NAME, ATTENTION_NEW_BACTERIA
+    ANALYSIS_SHEET_NAME, ATTENTION_NEW_BACTERIA,
+    PD_ENGINE
 )
 from params.departments import departments
 from .exceptions import GetDataFromPdfError, SaveToExcelFileError
@@ -25,13 +26,13 @@ from .decorators import redirect_stderr_to_log
 # Получение главного DataFrame из существующего файла
 df: DataFrame = pd.read_excel(
     settings.MAIN_EXCEL_FILE_PATH,
-    sheet_name=MAIN_SHEET_NAME, engine='openpyxl'
+    sheet_name=MAIN_SHEET_NAME, engine=PD_ENGINE
 )
 
 # Получение DataFrame с данными о имеющихся бактериях
 bacteria_list_df: DataFrame = pd.read_excel(
     settings.MAIN_EXCEL_FILE_PATH,
-    sheet_name=ANALYSIS_SHEET_NAME, engine='openpyxl'
+    sheet_name=ANALYSIS_SHEET_NAME, engine=PD_ENGINE
 )
 
 
@@ -80,6 +81,7 @@ def get_data_from_pdf(file_path: str) -> tuple:
             found_antibiotics: dict[str, list[str]] = dict()
 
             for page in pdf.pages:
+
                 # Извлекаем текст
                 text = page.extract_text()
                 # Пакуем в таблицу значения резистентности
@@ -143,6 +145,16 @@ def get_data_from_pdf(file_path: str) -> tuple:
                                 if antibiotic_matches:
                                     found_antibiotics[antibiotic_matches[0]] = row[1:]
 
+        # Если в посеве не найдено ни одной искомой культуры,
+        # то поступит сообщение об этом в лог файл
+        if len(cultures) == 0:
+            cultures.append('')
+            with open('log_info.txt', 'a') as log_file:
+                log_file.write(
+                    'Не найдено ни одной искомой культуры в посеве\n'
+                    f'Проверяемый файл: {file_path}'
+                )
+
         # Проверяем резистентность бактерий на наличие особых резистнетных форм
         # MRSA, ESBL, CRE и тд.
         for index, culture in enumerate(cultures):
@@ -164,6 +176,7 @@ def get_data_from_pdf(file_path: str) -> tuple:
             studied_biomaterial, date_taken, date_completed,
             found_antibiotics
         )
+
     except GetDataFromPdfError as e:
         print(
             f'{COLLECT_DATA_ERROR} {file_path}: {e}'
@@ -182,6 +195,7 @@ def add_to_table(output_file_path: str) -> DataFrame:
     Returns:
         df (Class: DataFrame): Обновлённые данные
     """
+
     # Создаём словарь data, который будет упакован в новый DataFrame
     data: dict[str, list[str]] = {
         CULTURES: [],
@@ -267,7 +281,7 @@ def add_to_table(output_file_path: str) -> DataFrame:
         # Сохраняем в Excel
         with pd.ExcelWriter(
             output_file_path, mode='a',
-            engine='openpyxl', if_sheet_exists='overlay'
+            engine=PD_ENGINE, if_sheet_exists='overlay'
         ) as writer:
             concat_df.to_excel(writer, index=False, sheet_name=MAIN_SHEET_NAME)
         print(COMPLETE_COLLECT_PACKAGE)
