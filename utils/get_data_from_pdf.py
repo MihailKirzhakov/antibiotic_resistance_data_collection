@@ -6,7 +6,7 @@ from pandas import DataFrame
 import pdfplumber
 from tqdm import tqdm
 
-from params.antibiotics import antibiotic_list
+from params.antibiotics import antibiotic_list, UNIQUE_PREFIXES_LIST
 from params.config import settings
 from params.constants import (
     MAIN_SHEET_NAME, CULTURES, TITER, DEPARTMENT, CARD_NUMBER,
@@ -143,6 +143,22 @@ def get_data_from_pdf(file_path: str) -> tuple:
                                 if antibiotic_matches:
                                     found_antibiotics[antibiotic_matches[0]] = row[1:]
 
+        # Проверяем резистентность бактерий на наличие особых резистнетных форм
+        # MRSA, ESBL, CRE и тд.
+        for index, culture in enumerate(cultures):
+            for antibiotic in found_antibiotics.keys():
+                for prefix_data in UNIQUE_PREFIXES_LIST:
+                    if culture in prefix_data.get('cultures'):
+                        if (
+                            found_antibiotics.get(antibiotic)[index] == 'R'
+                            and antibiotic in prefix_data.get('resistant_ab')
+                        ):
+                            cultures[index] = cultures[index] + prefix_data.get('prefix')
+                            break
+                else:
+                    continue
+                break
+
         return (
             cultures, titer_list, department, card_number,
             studied_biomaterial, date_taken, date_completed,
@@ -193,6 +209,7 @@ def add_to_table(output_file_path: str) -> DataFrame:
         filename for filename in os.listdir(settings.MAIN_FOLDER_PATH)
         if filename.endswith('.pdf')
     ]
+    pdf_files.sort()
 
     # Перебираем все файлы в указанной папке
     for filename in tqdm(pdf_files, desc=COLLECTING_PROCESS):
