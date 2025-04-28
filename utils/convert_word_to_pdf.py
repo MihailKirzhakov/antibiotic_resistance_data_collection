@@ -33,6 +33,7 @@ def convertation(work_folder: str) -> None:
             filename for filename in files_in_folder
             if filename.endswith('.docx') or filename.endswith('.doc')
         ]
+        word_files.sort()
 
     # Перебираем список
     for index, input_file in enumerate(word_files, start=1):
