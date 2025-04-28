@@ -30,7 +30,7 @@ ATTENTION_NEW_BACTERIA = (
 )
 
 # Паттерны регулярных выражений
-CULTURE_PATTERN = r'\d+\.\s+([A-Za-z]+\s+[a-z]+)\s+\d+\s+KOE/мл'
+CULTURE_PATTERN = r'\d+\.\s+([A-Za-z]+\s+[a-z]+)(?:\s+\d+\s+KOE/мл|\s*)?'
 TITER_PATTERN = r'(\d+)\s+KOE'
 CARD_NUMBER_PATTENR = r'Номер карты:\s*(\d+/\w+)'
 STUDIED_BIOMATERIAL_PATTERN = r'Исследуемый биоматериал (.+)'
