@@ -44,6 +44,7 @@ pip-delete-this-directory.txt
 # info logs
 log_info.txt
 new_bacteria.txt
+*.stackdump
 
 # Unit test / coverage reports
 htmlcov/

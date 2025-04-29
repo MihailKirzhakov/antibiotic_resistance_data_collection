@@ -26,7 +26,7 @@ CHECK_PDF_FILES_ERROR = (
 )
 ATTENTION_NEW_BACTERIA = (
     'Обратите внимание! Появились неучтённые бактерии! '
-    'Их названия были внесены в файл new_bacteria.txt.'
+    'Их названия были внесены в файл log_info.log.'
 )
 PD_ENGINE = 'openpyxl'
 

@@ -1,6 +1,7 @@
 import os
 import re
 
+from loguru import logger
 import pandas as pd
 from pandas import DataFrame
 import pdfplumber
@@ -149,11 +150,10 @@ def get_data_from_pdf(file_path: str) -> tuple:
         # то поступит сообщение об этом в лог файл
         if len(cultures) == 0:
             cultures.append('')
-            with open('log_info.txt', 'a') as log_file:
-                log_file.write(
-                    'Не найдено ни одной искомой культуры в посеве\n'
-                    f'Проверяемый файл: {file_path}'
-                )
+            logger.warning(
+                'Не найдено ни одной искомой культуры в посеве\n'
+                f'Проверяемый файл: {file_path}'
+            )
 
         # Проверяем резистентность бактерий на наличие особых резистнетных форм
         # MRSA, ESBL, CRE и тд.
@@ -178,9 +178,9 @@ def get_data_from_pdf(file_path: str) -> tuple:
         )
 
     except GetDataFromPdfError as e:
-        print(
-            f'{COLLECT_DATA_ERROR} {file_path}: {e}'
-        )
+        error = f'{COLLECT_DATA_ERROR} {file_path}: {e}'
+        logger.error(error)
+        print(error)
         return ([], [], None, None, None, None, None, {})
 
 
@@ -266,9 +266,9 @@ def add_to_table(output_file_path: str) -> DataFrame:
     # Помещаем новые бактерии в текстовый файл,
     # если есть новые бактерии
     if len(new_bacteria_list) > 0:
-        with open(os.path.join(os.getcwd(), 'new_bacteria.txt.'), 'w') as file:
-            for bacteria in new_bacteria_list:
-                file.write(f"{bacteria}\n")
+        logger.info(
+            f'Новые культуры: {new_bacteria_list}'
+        )
         print(ATTENTION_NEW_BACTERIA)
 
     # Создаём обновлённый датафрейм
@@ -286,7 +286,9 @@ def add_to_table(output_file_path: str) -> DataFrame:
             concat_df.to_excel(writer, index=False, sheet_name=MAIN_SHEET_NAME)
         print(COMPLETE_COLLECT_PACKAGE)
     except SaveToExcelFileError as e:
-        print(
+        error = (
             f'Ошибка при сохранении данных в файл excel '
             f'{output_file_path}: {e}'
         )
+        logger.error(error)
+        print(error)

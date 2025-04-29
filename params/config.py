@@ -1,4 +1,12 @@
+from loguru import logger
 from pydantic_settings import BaseSettings
+
+
+# Настраиваем лог обработчик
+logger.remove()
+logger.add(
+    sink='log_info.log', level="INFO", rotation='5 MB', mode='a'
+)
 
 
 class Settings(BaseSettings):
