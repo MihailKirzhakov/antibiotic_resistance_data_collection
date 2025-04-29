@@ -4,7 +4,7 @@ from params.config import settings
 from params.constants import (
     MAIN_DESCRIPTION, CONVERT_DESCRIPTION, ADD_TO_TABLE_DESCRIPTION
 )
-from utils.get_data_from_pdf import df, add_to_table
+from utils.get_data_from_pdf import add_to_table
 from utils.convert_word_to_pdf import convertation
 
 
