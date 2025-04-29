@@ -19,16 +19,32 @@ ADD_TO_TABLE_DESCRIPTION = (
 COMPLETE_CONVERSION = 'Конвертирование завершено!'
 COMPLETE_COLLECT_PACKAGE = 'Сбор и упаковка данных завершены!'
 COLLECTING_PROCESS = 'Процесс сбора данных...'
+CONVERTION_PROCESS = 'Процесс конвертирования'
 COLLECT_DATA_ERROR = 'Ошибка при сборе данных из файла'
 CHECK_PDF_FILES_ERROR = (
     'Для корректной работы программы необходимо удалить/убрать все '
     '.pdf файлы из папки'
 )
+PDF_FILE_EXISTS_ERROR = 'В папке нет .pdf файлов!'
 ATTENTION_NEW_BACTERIA = (
     'Обратите внимание! Появились неучтённые бактерии! '
     'Их названия были внесены в файл log_info.log.'
 )
 PD_ENGINE = 'openpyxl'
+START_GUI = (
+    'Запуск программы с графическим интерфейсом'
+)
+PROCESSING = 'Выполняю, пожалуйста подождите...'
+CHOOSE_FILE = 'Выберите основной Excel файл'
+CHOOSE_FOLDER = 'Выберите папку'
+TO_CONVERT = 'Конвертировать'
+TO_COLLECT_PACK = 'Обработать и упаковать данные'
+CHOOSE_FILE_ERROR = 'Файл не выбран!'
+CHOOSE_FOLDER_ERROR = 'Папка не выбрана!'
+WARNING = 'Предупреждение'
+NOTIFICATION = 'Оповещение!'
+FINISHED_PROCESS = 'Процесс завершён'
+ERROR = 'Ошибка!'
 
 # Паттерны регулярных выражений
 CULTURE_PATTERN = r'\d+\.\s+([A-Za-z]+\s+[a-z]+)(?:\s+\d+\s+KOE/мл|\s*)?'

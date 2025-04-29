@@ -5,6 +5,7 @@ from loguru import logger
 import pandas as pd
 from pandas import DataFrame
 import pdfplumber
+from tkinter import messagebox
 from tqdm import tqdm
 
 from params.antibiotics import antibiotic_list, UNIQUE_PREFIXES_LIST
@@ -17,7 +18,7 @@ from params.constants import (
     DATE_COMPLETED_PATTERN, COLLECTING_PROCESS,
     COLLECT_DATA_ERROR, COMPLETE_COLLECT_PACKAGE,
     ANALYSIS_SHEET_NAME, ATTENTION_NEW_BACTERIA,
-    PD_ENGINE
+    PD_ENGINE, PDF_FILE_EXISTS_ERROR, ERROR
 )
 from params.departments import departments
 from .exceptions import GetDataFromPdfError, SaveToExcelFileError
@@ -184,7 +185,7 @@ def get_data_from_pdf(file_path: str) -> tuple:
         return ([], [], None, None, None, None, None, {})
 
 
-def add_to_table(output_file_path: str) -> DataFrame:
+def add_to_table(output_file_path: str, update_progress=None) -> DataFrame:
     """Функция для упаковки и передачи данных в файл excel
 
     Args:
@@ -207,6 +208,9 @@ def add_to_table(output_file_path: str) -> DataFrame:
         DATE_COMPLETED: [],
     }
 
+    # Переменная для контроля работы прогрессбара
+    disable_progress = True if update_progress else False
+
     # Создаём список имеющихся бактерий для сверки
     bacteria_list: list[str] = []
     new_bacteria_list: list[str] = []
@@ -223,10 +227,20 @@ def add_to_table(output_file_path: str) -> DataFrame:
         filename for filename in os.listdir(settings.MAIN_FOLDER_PATH)
         if filename.endswith('.pdf')
     ]
+    if not pdf_files:
+        return (
+            print(PDF_FILE_EXISTS_ERROR) if not update_progress
+            else messagebox.showerror(ERROR, PDF_FILE_EXISTS_ERROR)
+        )
+
     pdf_files.sort()
 
     # Перебираем все файлы в указанной папке
-    for filename in tqdm(pdf_files, desc=COLLECTING_PROCESS):
+    for index, filename in enumerate(tqdm(
+        pdf_files,
+        desc=COLLECTING_PROCESS,
+        disable=disable_progress
+    )):
         if filename.endswith('.pdf'):
             file_path = os.path.join(settings.MAIN_FOLDER_PATH, filename)
 
@@ -257,6 +271,11 @@ def add_to_table(output_file_path: str) -> DataFrame:
         for key in data.keys():
             while len(data[key]) < max_length:
                 data[key].append('')
+
+        # Обновление прогрессбара в графическом интерфейсе
+        if update_progress:
+            progress = (index + 1) / len(pdf_files)
+            update_progress(progress)
 
     # Проверяем на наличие новых, не учтённых бактерий
     for value in data[CULTURES]:
