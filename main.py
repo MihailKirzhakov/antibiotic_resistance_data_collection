@@ -8,6 +8,29 @@ from utils.get_data_from_pdf import add_to_table
 from utils.convert_word_to_pdf import convertation
 
 
+# Добавляем возможность запуска программы с аргументами
+# для работы в разных режимах
+parser = argparse.ArgumentParser(
+        description=MAIN_DESCRIPTION
+    )
+
+# Режим конвертирования
+parser.add_argument(
+    '-c', '--convert',
+    action='store_true',
+    help=CONVERT_DESCRIPTION
+)
+
+# Режим обработки и упаковки данных
+parser.add_argument(
+    '-a', '--add',
+    action='store_true',
+    help=ADD_TO_TABLE_DESCRIPTION
+)
+
+args = parser.parse_args()
+
+
 def main(convert=False, add=False):
     """Основная функция для запуска основной логики работы приложения.
 
@@ -28,21 +51,8 @@ def main(convert=False, add=False):
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(
-        description=MAIN_DESCRIPTION
-    )
-    parser.add_argument(
-        '-c', '--convert',
-        action='store_true',
-        help=CONVERT_DESCRIPTION
-    )
-    parser.add_argument(
-        '-a', '--add',
-        action='store_true',
-        help=ADD_TO_TABLE_DESCRIPTION
-    )
 
-    args = parser.parse_args()
+    # Запуск программы
     try:
         main(convert=args.convert, add=args.add)
     except Exception as e:
