@@ -11,11 +11,11 @@ from params.constants import (
 )
 
 
-class GraphicalUserInterface:
+class GraphicalUserInterface(ctk.CTk):
     def __init__(self):
-        self.app = ctk.CTk()
-        self.app.title('ARDC')
-        self.app.geometry('500x500')
+        super().__init__()
+        self.title('ARDC')
+        self.geometry('500x500')
 
         # Пути к файлам
         self.folder_path = None
@@ -26,8 +26,8 @@ class GraphicalUserInterface:
             self.excel_file_path = settings.MAIN_EXCEL_FILE_PATH
 
         # Прогресс-бар с заданной шириной
-        self.progress_bar = ctk.CTkProgressBar(self.app, width=200)
-        self.progress_label = ctk.CTkLabel(self.app, text=PROCESSING)
+        self.progress_bar = ctk.CTkProgressBar(self, width=200)
+        self.progress_label = ctk.CTkLabel(self, text=PROCESSING)
 
         # Определяем ширину кнопок
         self.button_width = max(
@@ -37,14 +37,14 @@ class GraphicalUserInterface:
         # ---------- Кнопки ----------
         # Кнопка выбора файла excel
         self.choose_main_excel_file_button = ctk.CTkButton(
-            self.app,
+            self,
             text=CHOOSE_FILE,
             command=self.choose_main_excel_file,
             width=self.button_width
         )
         self.choose_main_excel_file_button.pack(pady=(50, 5))
         # Поле для вывода пути к файлу
-        self.excel_label_frame = ctk.CTkFrame(self.app)
+        self.excel_label_frame = ctk.CTkFrame(self)
         self.excel_label_frame.pack(pady=(0, 5))
         self.excel_label = ctk.CTkLabel(
             self.excel_label_frame,
@@ -57,14 +57,14 @@ class GraphicalUserInterface:
 
         # Кнопка выбора папки с файлами
         self.choose_folder_button = ctk.CTkButton(
-            self.app,
+            self,
             text=CHOOSE_FOLDER,
             command=self.choose_folder,
             width=self.button_width
         )
         self.choose_folder_button.pack(pady=(0, 5))
         # Поле для вывода пути к папке
-        self.folder_label_frame = ctk.CTkFrame(self.app)
+        self.folder_label_frame = ctk.CTkFrame(self)
         self.folder_label_frame.pack(pady=(0, 5))
         self.folder_label = ctk.CTkLabel(
             self.folder_label_frame,
@@ -77,7 +77,7 @@ class GraphicalUserInterface:
 
         # Кнопка для запуска конвертирования
         self.convert_button = ctk.CTkButton(
-            self.app,
+            self,
             text=TO_CONVERT,
             command=self.on_convert,
             width=self.button_width
@@ -86,7 +86,7 @@ class GraphicalUserInterface:
 
         # Кнопка для запуска обработки и упаковки данных
         self.add_button = ctk.CTkButton(
-            self.app,
+            self,
             text=TO_COLLECT_PACK,
             command=self.on_add,
             width=self.button_width
@@ -122,7 +122,7 @@ class GraphicalUserInterface:
         self.progress_label.pack(pady=(5, 5))
         self.progress_bar.pack(pady=10)
         self.progress_bar.set(0)
-        self.app.update()
+        self.update()
         try:
             convertation(self.folder_path, self.update_progress)
         except Exception as e:
@@ -148,7 +148,7 @@ class GraphicalUserInterface:
         self.progress_label.pack(pady=(5, 5))
         self.progress_bar.pack(pady=10)
         self.progress_bar.set(0)
-        self.app.update()
+        self.update()
         try:
             add_to_table(self.excel_file_path, self.update_progress)
         except Exception as e:
@@ -162,12 +162,12 @@ class GraphicalUserInterface:
             self.progress_label.pack_forget()
             messagebox.showwarning(NOTIFICATION, FINISHED_PROCESS)
 
-    def update_progress(self, progress):
+    def update_progress(self, progress: float):
         self.progress_bar.set(progress)
-        self.app.update()
+        self.update()
 
     def run(self):
-        self.app.mainloop()
+        self.mainloop()
 
 
 gui_app = GraphicalUserInterface()
