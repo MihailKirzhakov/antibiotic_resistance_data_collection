@@ -1,24 +1,20 @@
 import os
+from typing import Callable
 
-from docx2pdf import convert as original_convert
+from docx2pdf import convert
 from loguru import logger
 from tkinter import messagebox
-from tqdm import tqdm
 
 from utils.exceptions import ConvertToPdfFileError
 from params.constants import (
-    CHECK_PDF_FILES_ERROR, COMPLETE_CONVERSION, CONVERTION_PROCESS,
-    WARNING, ERROR
+    CHECK_PDF_FILES_ERROR, COMPLETE_CONVERSION, WARNING, ERROR
 )
 
 
-def convert(*args, **kwargs):
-    # Переопределяем функцию библиотеки, для корректной работы прогрессбара
-    with tqdm(disable=True):
-        return original_convert(*args, **kwargs)
-
-
-def convertation(work_folder: str, update_progress=None):
+def convertation(
+    work_folder: str,
+    update_progress: Callable[[float], None] | None = None
+) -> None:
     """
     Функция конвертирует файлы формата .docx в формат .pdf в ту же папку,
     используя библиотеку 'docx2pdf'
@@ -38,11 +34,11 @@ def convertation(work_folder: str, update_progress=None):
         filename for filename in files_in_folder if filename.endswith('.pdf')
     ]
     if pdf_files:
-        return (
+        if not update_progress:
             print(f'{CHECK_PDF_FILES_ERROR} {work_folder}')
-            if not update_progress
-            else messagebox.showwarning(WARNING, CHECK_PDF_FILES_ERROR)
-        )
+        else:
+            messagebox.showwarning(WARNING, CHECK_PDF_FILES_ERROR)
+        return
     else:
         # Получаем список файлов .docx и .doc
         word_files = [
