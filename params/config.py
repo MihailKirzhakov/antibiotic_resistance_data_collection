@@ -1,8 +1,10 @@
 import argparse
+from typing import Optional
 
 from loguru import logger
 from params.constants import (
-    MAIN_DESCRIPTION, CONVERT_DESCRIPTION, ADD_TO_TABLE_DESCRIPTION
+    MAIN_DESCRIPTION, CONVERT_DESCRIPTION, ADD_TO_TABLE_DESCRIPTION,
+    START_GUI
 )
 from pydantic_settings import BaseSettings
 
@@ -34,14 +36,21 @@ parser.add_argument(
     help=ADD_TO_TABLE_DESCRIPTION
 )
 
+# Режим запуска GUI
+parser.add_argument(
+    '-g', '--gui',
+    action='store_true',
+    help=START_GUI
+)
+
 args = parser.parse_args()
 
 
 # -----------------------------------------------------------------
 # Настройки для получения переменных окружения из файла .env
 class Settings(BaseSettings):
-    MAIN_EXCEL_FILE_PATH: str
-    MAIN_FOLDER_PATH: str
+    MAIN_EXCEL_FILE_PATH: Optional[str]
+    MAIN_FOLDER_PATH: Optional[str]
     DIABETIC_FOOT: str
     DIABETIC_KIDNEY_DISEASE: str
     NEUROENDOCRINOLOGY: str
