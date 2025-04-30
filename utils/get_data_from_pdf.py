@@ -1,5 +1,6 @@
 import os
 import re
+from typing import Callable
 
 from loguru import logger
 import pandas as pd
@@ -185,7 +186,10 @@ def get_data_from_pdf(file_path: str) -> tuple:
         return ([], [], None, None, None, None, None, {})
 
 
-def add_to_table(output_file_path: str, update_progress=None) -> DataFrame:
+def add_to_table(
+    output_file_path: str,
+    update_progress: Callable[[float], None] | None = None
+) -> DataFrame:
     """Функция для упаковки и передачи данных в файл excel
 
     Args:
