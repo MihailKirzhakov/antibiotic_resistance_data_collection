@@ -3,8 +3,7 @@ from typing import Optional
 
 from loguru import logger
 from params.constants import (
-    MAIN_DESCRIPTION, CONVERT_DESCRIPTION, ADD_TO_TABLE_DESCRIPTION,
-    START_GUI
+    MAIN_DESCRIPTION, CONVERT_DESCRIPTION, ADD_TO_TABLE_DESCRIPTION
 )
 from pydantic_settings import BaseSettings
 
@@ -36,13 +35,6 @@ parser.add_argument(
     help=ADD_TO_TABLE_DESCRIPTION
 )
 
-# Режим запуска GUI
-parser.add_argument(
-    '-g', '--gui',
-    action='store_true',
-    help=START_GUI
-)
-
 args = parser.parse_args()
 
 
@@ -51,24 +43,6 @@ args = parser.parse_args()
 class Settings(BaseSettings):
     MAIN_EXCEL_FILE_PATH: Optional[str]
     MAIN_FOLDER_PATH: Optional[str]
-    DIABETIC_FOOT: str
-    DIABETIC_KIDNEY_DISEASE: str
-    NEUROENDOCRINOLOGY: str
-    ENDOCRINOPATHIES_THERAPY: str
-    PATHOLOGY_OF_PARATHYROID_GLANDS: str
-    ANESTHESIOLOGY_AND_RESUSCITATION_CENTER: str
-    CARDIOLOGY_AND_VASCULAR_SURGERY: str
-    ENDOCRINOPATHIES_OF_EARLY_AGE: str
-    ANDROLOGY_AND_UROLOGY: str
-    DIABETES_FORECASTING_AND_INNOVATION: str
-    SURGERY: str
-    ASSISTED_REPRODUCTIVE_TECHNOLOGIES: str
-    THYROID_GLAND: str
-    CHILDHOOD_ENDOCRINE_TUMORS: str
-    PEDIATRIC_SURGERY: str
-    CHILDHOOD_DIABETES_MELLITUS: str
-    OSTEOPOROSIS_AND_OSTEOPATHY: str
-    PEDIATRIC_THYROIDOLOGY: str
 
     class Config:
         env_file = '.env'
