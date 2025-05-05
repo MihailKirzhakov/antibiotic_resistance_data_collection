@@ -5,11 +5,7 @@ from utils.convert_word_to_pdf import convertation
 from utils.gui import gui_app
 
 
-def main(convert=False, add=False, gui=False):
-    # Если передан аргумент -g, запускаем графический интерфейс
-    if gui:
-        gui_app.run()
-        return
+def main(convert=False, add=False):
 
     # Если передан аргумент -c, выполняем только конвертирование
     if convert:
@@ -21,15 +17,14 @@ def main(convert=False, add=False, gui=False):
         add_to_table(settings.MAIN_EXCEL_FILE_PATH)
         return
 
-    # Если не переданы аргументы, выполняем оба действия последовательно
-    convertation(settings.MAIN_FOLDER_PATH)
-    add_to_table(settings.MAIN_EXCEL_FILE_PATH)
+    # Если не переданы аргументы, запускаем программу с графическим интерфейсом
+    gui_app.run()
 
 
 if __name__ == '__main__':
 
     # Запуск программы
     try:
-        main(convert=args.convert, add=args.add, gui=args.gui)
+        main(convert=args.convert, add=args.add)
     except Exception as e:
         print(f'Произошла ошибка: {e}')

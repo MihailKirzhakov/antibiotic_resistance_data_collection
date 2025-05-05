@@ -121,7 +121,11 @@ def get_data_from_pdf(file_path: str) -> tuple:
                     STUDIED_BIOMATERIAL_PATTERN, text
                 )
                 if studied_biomaterial_match:
-                    studied_biomaterial = studied_biomaterial_match.group(1)
+                    studied_biomaterial = (
+                        'Мазок/отделяемое раны' if 'Раневое отделяемое'
+                        == studied_biomaterial_match.group(1)
+                        else studied_biomaterial_match.group(1)
+                    )
 
                 # Ищем дату забора
                 date_taken_match = re.search(DATE_TAKEN_PATTERN, text)
