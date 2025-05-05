@@ -23,7 +23,7 @@ class GraphicalUserInterface(ctk.CTk):
         self.logo = ctk.CTkImage(
             light_image=Image.open('ARDC Logo.png'),
             dark_image=Image.open('ARDC Logo.png'),
-            size=(500, 150)
+            size=(600, 150)
         )
         self.logo_label = ctk.CTkLabel(
             master=self,
