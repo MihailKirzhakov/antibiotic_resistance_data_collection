@@ -17,7 +17,7 @@ class GraphicalUserInterface(ctk.CTk):
     def __init__(self):
         super().__init__()
         self.title('ARDC')
-        self.geometry('800x500')  # Увеличиваем ширину окна
+        self.geometry('800x500')
 
         # Логотип программы
         self.logo = ctk.CTkImage(
@@ -133,19 +133,14 @@ class GraphicalUserInterface(ctk.CTk):
         )
         self.sidebar_label.pack(pady=(50, 5))
 
-        # # Скрол виджет с инструкцией
-        # self.instruction_label = ctk.CTkScrollableFrame(
-        #     self.sidebar_frame, width=200, height=200
-        # )
-        # self.instruction_label.pack(pady=(5, 5))
-
+        # Скрол виджет с инструкцией
         text_box = ctk.CTkTextbox(self.sidebar_frame, width=300, height=200)
         text_box.pack(pady=5)
 
         # Вставляем текст в текстовое поле
         text_box.insert("0.0", INSTRUCTION_TEXT)
 
-        # Делаем текстовое поле только для чтения (если нужно)
+        # Делаем текстовое поле только для чтения
         text_box.configure(state="disabled")
 
     def choose_main_excel_file(self):
