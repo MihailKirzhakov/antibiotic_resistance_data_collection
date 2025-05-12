@@ -9,7 +9,7 @@ from params.constants import (
     PROCESSING, CHOOSE_FILE, CHOOSE_FOLDER, TO_CONVERT,
     TO_COLLECT_PACK, CHOOSE_FILE_ERROR, CHOOSE_FOLDER_ERROR,
     WARNING, NOTIFICATION, FINISHED_PROCESS, ERROR,
-    INSTRUCTION_TEXT, INSTRUCTION
+    INSTRUCTION_TEXT, INSTRUCTION, CREATE_BY, VERSION
 )
 
 
@@ -116,7 +116,7 @@ class GraphicalUserInterface(ctk.CTk):
         )
         self.convert_button.pack(pady=(0, 5))
 
-        # Кноп # Кнопка для запуска обработки и упаковки данных
+        # Кнопка для запуска обработки и упаковки данных
         self.add_button = ctk.CTkButton(
             self.main_frame,
             text=TO_COLLECT_PACK,
@@ -124,6 +124,14 @@ class GraphicalUserInterface(ctk.CTk):
             width=self.button_width
         )
         self.add_button.pack(pady=(0, 5))
+
+        # Поле для отображения автора
+        self.create_by_label = ctk.CTkLabel(
+            self.main_frame,
+            text=CREATE_BY,
+            justify='left'
+        )
+        self.create_by_label.pack(side='bottom', anchor='w', padx=(2, 0))
 
     def create_sidebar_widgets(self):
 
@@ -143,20 +151,38 @@ class GraphicalUserInterface(ctk.CTk):
         # Делаем текстовое поле только для чтения
         text_box.configure(state="disabled")
 
+        # Поле для отображения версии программы
+        self.version_label = ctk.CTkLabel(
+            self.sidebar_frame,
+            text=VERSION,
+            justify='right'
+        )
+        self.version_label.pack(side='bottom', anchor='e', padx=(0, 2))
+
     def choose_main_excel_file(self):
         self.excel_file_path = filedialog.askopenfilename(
             title=CHOOSE_FILE,
             filetypes=(('Excel files', '*.xlsx;*.xls'),)
         )
         if self.excel_file_path:
-            self.excel_label.configure(text=self.excel_file_path)
+            self.excel_label.configure(
+                text=(
+                    f'{self.excel_file_path[:15]}...'
+                    f'{self.excel_file_path[-15:]}'
+                )
+            )
         else:
             self.excel_label.configure(text=CHOOSE_FILE_ERROR)
 
     def choose_folder(self):
         self.folder_path = f'{filedialog.askdirectory(title=CHOOSE_FOLDER)}/'
         if self.folder_path:
-            self.folder_label.configure(text=self.folder_path)
+            self.folder_label.configure(
+                text=(
+                    f'{self.folder_path[:15]}...'
+                    f'{self.folder_path[-15:]}'
+                )
+            )
         else:
             self.folder_label.configure(text=CHOOSE_FOLDER_ERROR)
 
