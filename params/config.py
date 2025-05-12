@@ -41,8 +41,8 @@ args = parser.parse_args()
 # -----------------------------------------------------------------
 # Настройки для получения переменных окружения из файла .env
 class Settings(BaseSettings):
-    MAIN_EXCEL_FILE_PATH: Optional[str]
-    MAIN_FOLDER_PATH: Optional[str]
+    MAIN_EXCEL_FILE_PATH: Optional[str] = None
+    MAIN_FOLDER_PATH: Optional[str] = None
 
     class Config:
         env_file = '.env'

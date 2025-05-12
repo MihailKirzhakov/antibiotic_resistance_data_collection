@@ -9,11 +9,15 @@ def main(convert=False, add=False):
 
     # Если передан аргумент -c, выполняем только конвертирование
     if convert:
+        if not settings.MAIN_FOLDER_PATH:
+            return print('В файле .env не указан путь до папки с файлами .doc/.docx')
         convertation(settings.MAIN_FOLDER_PATH)
         return
 
     # Если передан аргумент -a, выполняем только сбор и упаковку данных
     if add:
+        if not settings.MAIN_EXCEL_FILE_PATH:
+            return print('В файле .env не указан путь до файла .xlsx')
         add_to_table(settings.MAIN_EXCEL_FILE_PATH)
         return
 
