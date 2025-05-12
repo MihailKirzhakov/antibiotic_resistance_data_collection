@@ -21,8 +21,8 @@ class GraphicalUserInterface(ctk.CTk):
 
         # Логотип программы
         self.logo = ctk.CTkImage(
-            light_image=Image.open('ARDC Logo.png'),
-            dark_image=Image.open('ARDC Logo.png'),
+            light_image=Image.open('media/ARDC Logo.png'),
+            dark_image=Image.open('media/ARDC Logo.png'),
             size=(600, 150)
         )
         self.logo_label = ctk.CTkLabel(
