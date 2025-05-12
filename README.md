@@ -17,7 +17,8 @@
 
 ![Python 3.12](https://img.shields.io/badge/Python-3.12-blue.svg?style=flat&logo=python&logoColor=white)
 ![Pandas](https://img.shields.io/badge/Pandas-brightgreen?style=flat&logo=pandas)
-![Pydantic](https://img.shields.io/badge/Pydantic-grey?style=flat&logo=pandas)
+![Pydantic](https://img.shields.io/badge/Pydantic-grey?style=flat)
+![Customtkinter](https://img.shields.io/badge/Customtkinter-blue?style=flat)
 
 ## Как развернуть проект
 
@@ -30,16 +31,16 @@ pip install -r requirements.txt
 ```
 2. Заполнить файл .env
 ```
-# Пути к папкам/файлам
+# Если вы будете использовать программу без графического интерфейса, то вам нужно
+# указать ути к папкам/файлам, для корректной работы
 MAIN_EXCEL_FILE_PATH=C:/ваш/путь/до/файла.xlsx
 MAIN_FOLDER_PATH=C:/ваш/путь/до/папки/с/файлами
 ...
 ```
 3. Запустить скрипт можно как с аргументами так и без:
-  1) ```python main.py``` Запустит скрипт, все функции будут выполнены последовательно
+  1) ```python main.py``` Запустит программу с графическим интерфейсом
   2) ```python main.py -c``` Запустит скрипт только для конвертирования
   3) ```python main.py -a``` Запустит скрипт только для сбора и переноса данных в файл Excel
-  4) ```python main.py -h``` Можно ознакомится с режимами запуска скрипта
 
 ## Автор проекта
 
