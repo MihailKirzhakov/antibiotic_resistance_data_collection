@@ -26,19 +26,6 @@ from .exceptions import GetDataFromPdfError, SaveToExcelFileError
 from .decorators import redirect_stderr_to_log
 
 
-# Получение главного DataFrame из существующего файла
-df: DataFrame = pd.read_excel(
-    settings.MAIN_EXCEL_FILE_PATH,
-    sheet_name=MAIN_SHEET_NAME, engine=PD_ENGINE
-)
-
-# Получение DataFrame с данными о имеющихся бактериях
-bacteria_list_df: DataFrame = pd.read_excel(
-    settings.MAIN_EXCEL_FILE_PATH,
-    sheet_name=ANALYSIS_SHEET_NAME, engine=PD_ENGINE
-)
-
-
 def get_data_from_pdf(file_path: str) -> tuple:
     """Функция для сбора данных из файла PDF
 
@@ -204,6 +191,18 @@ def add_to_table(
     Returns:
         df (Class: DataFrame): Обновлённые данные
     """
+
+    # Получение главного DataFrame из существующего файла
+    df: DataFrame = pd.read_excel(
+        settings.MAIN_EXCEL_FILE_PATH,
+        sheet_name=MAIN_SHEET_NAME, engine=PD_ENGINE
+    )
+
+    # Получение DataFrame с данными о имеющихся бактериях
+    bacteria_list_df: DataFrame = pd.read_excel(
+        settings.MAIN_EXCEL_FILE_PATH,
+        sheet_name=ANALYSIS_SHEET_NAME, engine=PD_ENGINE
+    )
 
     # Создаём словарь data, который будет упакован в новый DataFrame
     data: dict[str, list[str]] = {
