@@ -24,6 +24,9 @@ pip-wheel-metadata/
 share/python-wheels/
 checking/
 output/
+main.onefile-build/
+main.dist/
+main.build/
 *.egg-info/
 .installed.cfg
 *.egg
