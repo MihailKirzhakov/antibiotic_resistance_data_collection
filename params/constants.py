@@ -28,7 +28,7 @@ CHECK_PDF_FILES_ERROR = (
 PDF_FILE_EXISTS_ERROR = 'В папке нет .pdf файлов!'
 ATTENTION_NEW_BACTERIA = (
     'Обратите внимание! Появились неучтённые бактерии! '
-    'Их названия были внесены в файл ADRC_info.log.'
+    'Их названия были внесены в файл ARDC_info.log.'
 )
 PD_ENGINE = 'openpyxl'
 START_GUI = (

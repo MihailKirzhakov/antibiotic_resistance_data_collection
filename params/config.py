@@ -11,7 +11,7 @@ from pydantic_settings import BaseSettings
 # Настраиваем лог обработчик
 logger.remove()
 logger.add(
-    sink='ADRC_info.log', level="INFO", rotation='5 MB', mode='a'
+    sink='ARDC_info.log', level="INFO", rotation='5 MB', mode='a'
 )
 
 # -----------------------------------------------------------------
