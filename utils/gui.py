@@ -226,7 +226,7 @@ class GraphicalUserInterface(ctk.CTk):
         self.progress_bar.set(0)
         self.update()
         try:
-            add_to_table(self.excel_file_path, self.update_progress)
+            add_to_table(self.excel_file_path, self.folder_path, self.update_progress)
         except Exception as e:
             messagebox.showerror(ERROR, e)
         finally:

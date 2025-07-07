@@ -178,7 +178,8 @@ def get_data_from_pdf(file_path: str) -> tuple:
 
 
 def add_to_table(
-    output_file_path: str,
+    output_file_path: str = settings.MAIN_EXCEL_FILE_PATH,
+    main_folder_path: str = settings.MAIN_FOLDER_PATH,
     update_progress: Callable[[float], None] | None = None
 ) -> DataFrame:
     """Функция для упаковки и передачи данных в файл excel
@@ -191,16 +192,16 @@ def add_to_table(
     Returns:
         df (Class: DataFrame): Обновлённые данные
     """
-
+    
     # Получение главного DataFrame из существующего файла
     df: DataFrame = pd.read_excel(
-        settings.MAIN_EXCEL_FILE_PATH,
+        output_file_path,
         sheet_name=MAIN_SHEET_NAME, engine=PD_ENGINE
     )
 
     # Получение DataFrame с данными о имеющихся бактериях
     bacteria_list_df: DataFrame = pd.read_excel(
-        settings.MAIN_EXCEL_FILE_PATH,
+        output_file_path,
         sheet_name=ANALYSIS_SHEET_NAME, engine=PD_ENGINE
     )
 
@@ -231,7 +232,7 @@ def add_to_table(
 
     # Получаем список всех PDF файлов в указанной папке
     pdf_files = [
-        filename for filename in os.listdir(settings.MAIN_FOLDER_PATH)
+        filename for filename in os.listdir(main_folder_path)
         if filename.endswith('.pdf')
     ]
     if not pdf_files:
@@ -249,7 +250,7 @@ def add_to_table(
         disable=disable_progress
     )):
         if filename.endswith('.pdf'):
-            file_path = os.path.join(settings.MAIN_FOLDER_PATH, filename)
+            file_path = os.path.join(main_folder_path, filename)
 
         # Запускаем функцию по сбору данных из файла PDF
         # и распаковываем результат в переменные
